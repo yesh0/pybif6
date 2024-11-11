@@ -1,5 +1,7 @@
 # pybif6
 
+[![PyPI - Version](https://img.shields.io/pypi/v/pybif6)](https://pypi.org/project/pybif6/)
+
 This tiny project rewrites [the BIF6 file parsing part] of [the R package `tofsims`] in Python.
 
 [the BIF6 file parsing part]: https://github.com/lorenzgerber/tofsims/blob/master/src/c_importer.cpp
