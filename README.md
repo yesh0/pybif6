@@ -12,13 +12,14 @@ This tiny project rewrites [the BIF6 file parsing part] of [the R package `tofsi
 ```python
 import pybif6
 
-for inteval_image in pybif6.parse_bif6("path/to/bif6/file"):
-    print(
-        f'id: {inteval_image.id}, '
-        f'mz_lower: {inteval_image.mz_lower}, '
-        f'mz_middle: {inteval_image.mz_middle}, '
-        f'mz_upper: {inteval_image.mz_upper}, '
-        f'image: {inteval_image.image.shape}'
-    )
-    # The image data is stored in `inteval_image.image`, a 2D numpy array.
+with pybif6.parse_bif6("path/to/bif6/file") as bif6_file:
+    for inteval_image in bif6_file:
+        print(
+            f'id: {inteval_image.id}, '
+            f'mz_lower: {inteval_image.mz_lower}, '
+            f'mz_middle: {inteval_image.mz_middle}, '
+            f'mz_upper: {inteval_image.mz_upper}, '
+            f'image: {inteval_image.image.shape}'
+        )
+        # The image data is stored in `inteval_image.image`, a 2D numpy array.
 ```

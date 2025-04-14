@@ -29,7 +29,7 @@ class BIF6Interval:
     """The upper bound of the m/z interval for this image."""
 
     image: np.ndarray
-    """The image data for this interval."""
+    """The image data for this interval, with its shape in [height, width] order."""
 
     def is_tic_image(self) -> bool:
         """Check if this interval is a TIC (total-ion-count) image.
@@ -51,7 +51,7 @@ class BIF6FileParser:
         self._file = open(file, "rb")
         header = self._file.read(_BIF6_HEADER.size)
         assert len(header) == _BIF6_HEADER.size, 'Invalid BIF6 header. Not a BIF6 file?'
-        magic, invernals, x_pixels, y_pixels = _BIF6_HEADER.unpack(header)
+        magic, invernals, y_pixels, x_pixels = _BIF6_HEADER.unpack(header)
         assert magic == _BIF6_MAGIC, 'Invalid BIF6 magic. Not a BIF6 file?'
         self._n_intervals = invernals
         self._n_x_pixels = x_pixels
@@ -67,8 +67,10 @@ class BIF6FileParser:
 
     @property
     def image_size(self) -> typing.Tuple[int, int]:
-        """The size of the images in the BIF6 file."""
-        return self._n_x_pixels, self._n_y_pixels
+        """The size of the images in the BIF6 file.
+
+        Similar to ndarray.shape, this is in [height, width] order."""
+        return self._n_y_pixels, self._n_x_pixels
 
     def close(self):
         """Close the BIF6 file.
@@ -100,8 +102,9 @@ class BIF6FileParser:
             interval_data[:_MZ_BIN_HEADER.size]
         )
         image = np.frombuffer(
-            interval_data[_MZ_BIN_HEADER.size:], dtype=np.uint32,
-        ).reshape((self._n_y_pixels, self._n_x_pixels)).T
+            interval_data[_MZ_BIN_HEADER.size:],
+            dtype=np.dtype(np.uint32).newbyteorder('<'),
+        ).reshape((self._n_x_pixels, self._n_y_pixels)).T
 
         return BIF6Interval(
             id=interval_id,
@@ -110,6 +113,13 @@ class BIF6FileParser:
             mz_upper=mz_upper,
             image=image,
         )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc_value, _traceback):
+        self.close()
+        return False
 
 
 def parse_bif6(file: typing.Union[os.PathLike, str]) -> BIF6FileParser:
