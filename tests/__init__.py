@@ -10,17 +10,22 @@ from pybif6 import (
 class TestBIF6(unittest.TestCase):
     def test_bif6(self):
         """Test BIF6 parsing"""
-        parser: BIF6FileParser = parse_bif6(
+        with parse_bif6(
             '/path/to/my/local/test/file.bif6',
-        )
-        self.assertIsInstance(parser, BIF6FileParser)
-        x, y = parser.image_size
-        interval: BIF6Interval = next(parser)
-        self.assertIsInstance(interval, BIF6Interval)
-        self.assertEqual(interval.image.shape, (x, y))
-        self.assertEqual(interval.image.dtype, np.uint32)
-        self.assertTrue(interval.is_tic_image())
-        parser.close()
+        ) as parser:
+            self.assertIsInstance(parser, BIF6FileParser)
+            height, width = parser.image_size
+            interval: BIF6Interval = next(parser)
+            self.assertIsInstance(interval, BIF6Interval)
+            self.assertEqual(interval.image.shape, (height, width))
+            self.assertEqual(interval.image.dtype, np.uint32)
+            self.assertTrue(interval.is_tic_image())
+
+            interval = next(parser)
+            self.assertIsInstance(interval, BIF6Interval)
+            self.assertEqual(interval.image.shape, (height, width))
+            self.assertEqual(interval.image.dtype, np.uint32)
+            self.assertFalse(interval.is_tic_image())
 
 
 if __name__ == '__main__':

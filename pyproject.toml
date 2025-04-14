@@ -1,6 +1,6 @@
 [project]
 name = "pybif6"
-version = "0.1.1"
+version = "0.1.2"
 description = "ToF-SIMS BIF6 file parsing library"
 authors = [
     {name = "Shenghui Ye", email = "yesh@aliyun.com"},

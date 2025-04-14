@@ -35,7 +35,7 @@ class BIF6Interval:
         """Check if this interval is a TIC (total-ion-count) image.
 
         The first interval in a BIF6 file should probably be a TIC image."""
-        return id == 0
+        return self.id == 0
 
 
 class BIF6FileParser:
